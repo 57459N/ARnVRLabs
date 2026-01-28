@@ -19,20 +19,7 @@ matplotlib.use('TkAgg')  # or 'Qt5Agg' if you have PyQt5
 import matplotlib.pyplot as plt
 
 
-def normalize_points(pts):
-    """2D point normalization (translate to mean=0 and scale so mean dist = sqrt(2))."""
-    pts = np.asarray(pts, dtype=np.float64)
-    mean = pts.mean(axis=0)
-    d = np.sqrt(((pts - mean) ** 2).sum(axis=1)).mean()
-    if d == 0:
-        raise ValueError("All points identical")
-    s = np.sqrt(2.0) / d
-    T = np.array([[s, 0, -s * mean[0]],
-                  [0, s, -s * mean[1]],
-                  [0, 0, 1]], dtype=np.float64)
-    pts_h = np.column_stack([pts, np.ones(len(pts))])
-    pts_n_h = (T @ pts_h.T).T
-    return pts_n_h[:, :2], T
+
 
 
 def find_homography(world_pts, image_pts):
@@ -249,8 +236,7 @@ def zhang_linear_calibration(image_points_list, world_points_2d, square_size=1.0
     print(f"Processing {len(image_points_list)} images with {len(world_points_scaled)} points each")
     print(f"World coordinate range: X=[{world_points_scaled[:,0].min():.1f}, {world_points_scaled[:,0].max():.1f}], Y=[{world_points_scaled[:,1].min():.1f}, {world_points_scaled[:,1].max():.1f}]")
 
-    # Step 1: Compute normalized world points (same for all views)
-    world_normalized, T_world = normalize_points(world_points_scaled)
+
 
     homographies = []
     V_constraints = []
@@ -259,16 +245,8 @@ def zhang_linear_calibration(image_points_list, world_points_2d, square_size=1.0
     for i, image_points in enumerate(image_points_list):
         print(f"Computing homography for image {i+1}")
 
-        # Normalize image points
-        image_normalized, T_image = normalize_points(image_points)
-
-        # Compute homography between normalized points
-        H_normalized = find_homography(world_normalized, image_normalized)
-
-        # Denormalize homography: H = inv(T_image) * H_normalized * T_world
-        # This transforms from world coordinates to image coordinates
-        H = np.linalg.inv(T_image) @ H_normalized @ T_world
-        H = H / H[2, 2]  # Normalize so H[2,2] = 1
+        H = find_homography(world_points_scaled, image_points)
+        H /= H[2, 2]  # Normalize so H[2,2] = 1
 
         homographies.append(H)
 
