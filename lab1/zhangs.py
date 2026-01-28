@@ -15,11 +15,9 @@ import numpy as np
 import cv2
 from scipy.linalg import cholesky
 import matplotlib
+
 matplotlib.use('TkAgg')  # or 'Qt5Agg' if you have PyQt5
 import matplotlib.pyplot as plt
-
-
-
 
 
 def find_homography(world_pts, image_pts):
@@ -36,8 +34,8 @@ def find_homography(world_pts, image_pts):
     for i in range(n):
         X, Y = world_pts[i]
         u, v = image_pts[i]
-        A[2 * i]     = [-X, -Y, -1,  0,  0,  0, u * X, u * Y, u]
-        A[2 * i + 1] = [ 0,  0,  0, -X, -Y, -1, v * X, v * Y, v]
+        A[2 * i] = [-X, -Y, -1, 0, 0, 0, u * X, u * Y, u]
+        A[2 * i + 1] = [0, 0, 0, -X, -Y, -1, v * X, v * Y, v]
 
     # Solve using SVD
     _, _, Vt = np.linalg.svd(A)
@@ -62,30 +60,30 @@ def get_homography_constraints(H):
     #         h_i_z*h_j_x + h_i_x*h_j_z, h_i_z*h_j_y + h_i_y*h_j_z, h_i_z*h_j_z]
 
     v00 = np.array([
-        h0[0]*h0[0],  # h0_x * h0_x
-        h0[0]*h0[1] + h0[1]*h0[0],  # h0_x*h0_y + h0_y*h0_x
-        h0[1]*h0[1],  # h0_y * h0_y
-        h0[2]*h0[0] + h0[0]*h0[2],  # h0_z*h0_x + h0_x*h0_z
-        h0[2]*h0[1] + h0[1]*h0[2],  # h0_z*h0_y + h0_y*h0_z
-        h0[2]*h0[2]   # h0_z * h0_z
+        h0[0] * h0[0],  # h0_x * h0_x
+        h0[0] * h0[1] + h0[1] * h0[0],  # h0_x*h0_y + h0_y*h0_x
+        h0[1] * h0[1],  # h0_y * h0_y
+        h0[2] * h0[0] + h0[0] * h0[2],  # h0_z*h0_x + h0_x*h0_z
+        h0[2] * h0[1] + h0[1] * h0[2],  # h0_z*h0_y + h0_y*h0_z
+        h0[2] * h0[2]  # h0_z * h0_z
     ])
 
     v01 = np.array([
-        h0[0]*h1[0],  # h0_x * h1_x
-        h0[0]*h1[1] + h0[1]*h1[0],  # h0_x*h1_y + h0_y*h1_x
-        h0[1]*h1[1],  # h0_y * h1_y
-        h0[2]*h1[0] + h0[0]*h1[2],  # h0_z*h1_x + h0_x*h1_z
-        h0[2]*h1[1] + h0[1]*h1[2],  # h0_z*h1_y + h0_y*h1_z
-        h0[2]*h1[2]   # h0_z * h1_z
+        h0[0] * h1[0],  # h0_x * h1_x
+        h0[0] * h1[1] + h0[1] * h1[0],  # h0_x*h1_y + h0_y*h1_x
+        h0[1] * h1[1],  # h0_y * h1_y
+        h0[2] * h1[0] + h0[0] * h1[2],  # h0_z*h1_x + h0_x*h1_z
+        h0[2] * h1[1] + h0[1] * h1[2],  # h0_z*h1_y + h0_y*h1_z
+        h0[2] * h1[2]  # h0_z * h1_z
     ])
 
     v11 = np.array([
-        h1[0]*h1[0],  # h1_x * h1_x
-        h1[0]*h1[1] + h1[1]*h1[0],  # h1_x*h1_y + h1_y*h1_x
-        h1[1]*h1[1],  # h1_y * h1_y
-        h1[2]*h1[0] + h1[0]*h1[2],  # h1_z*h1_x + h1_x*h1_z
-        h1[2]*h1[1] + h1[1]*h1[2],  # h1_z*h1_y + h1_y*h1_z
-        h1[2]*h1[2]   # h1_z * h1_z
+        h1[0] * h1[0],  # h1_x * h1_x
+        h1[0] * h1[1] + h1[1] * h1[0],  # h1_x*h1_y + h1_y*h1_x
+        h1[1] * h1[1],  # h1_y * h1_y
+        h1[2] * h1[0] + h1[0] * h1[2],  # h1_z*h1_x + h1_x*h1_z
+        h1[2] * h1[1] + h1[1] * h1[2],  # h1_z*h1_y + h1_y*h1_z
+        h1[2] * h1[2]  # h1_z * h1_z
     ])
 
     # Return the two constraint vectors
@@ -127,7 +125,7 @@ def solve_for_intrinsics(V):
     B = np.array([
         [b[0], b[1], b[3]],  # B11, B12, B13
         [b[1], b[2], b[4]],  # B12, B22, B23
-        [b[3], b[4], b[5]]   # B13, B23, B33
+        [b[3], b[4], b[5]]  # B13, B23, B33
     ], dtype=np.float64)
 
     print(f"B matrix:\n{B}")
@@ -212,14 +210,13 @@ def compute_extrinsics_from_H(H, K):
     return R, t
 
 
-def zhang_linear_calibration(image_points_list, world_points_2d, square_size=1.0, image_size=None):
+def zhang_linear_calibration(image_points_list, world_points_2d, image_size=None):
     """
     Linear Zhang's camera calibration method.
 
     Parameters:
     - image_points_list: List of Nx2 arrays with detected corner points (in pixels)
     - world_points_2d: Nx2 array with 2D world coordinates (in physical units, e.g., mm)
-    - square_size: Size of chessboard square in world units (scales world coordinates)
     - image_size: (width, height) tuple for validation (optional)
 
     Returns:
@@ -231,19 +228,18 @@ def zhang_linear_calibration(image_points_list, world_points_2d, square_size=1.0
         raise ValueError("Need at least 3 images for calibration")
 
     # Scale world points by square size
-    world_points_scaled = world_points_2d * square_size
+    world_points_scaled = world_points_2d
 
     print(f"Processing {len(image_points_list)} images with {len(world_points_scaled)} points each")
-    print(f"World coordinate range: X=[{world_points_scaled[:,0].min():.1f}, {world_points_scaled[:,0].max():.1f}], Y=[{world_points_scaled[:,1].min():.1f}, {world_points_scaled[:,1].max():.1f}]")
-
-
+    print(
+        f"World coordinate range: X=[{world_points_scaled[:, 0].min():.1f}, {world_points_scaled[:, 0].max():.1f}], Y=[{world_points_scaled[:, 1].min():.1f}, {world_points_scaled[:, 1].max():.1f}]")
 
     homographies = []
     V_constraints = []
 
     # Step 2: For each image, compute homography
     for i, image_points in enumerate(image_points_list):
-        print(f"Computing homography for image {i+1}")
+        print(f"Computing homography for image {i + 1}")
 
         H = find_homography(world_points_scaled, image_points)
         H /= H[2, 2]  # Normalize so H[2,2] = 1
@@ -268,13 +264,13 @@ def zhang_linear_calibration(image_points_list, world_points_2d, square_size=1.0
     # Step 5: Validate results if image size is provided
     if image_size is not None:
         width, height = image_size
-        fx, fy = K[0,0], K[1,1]
-        cx, cy = K[0,2], K[1,2]
+        fx, fy = K[0, 0], K[1, 1]
+        cx, cy = K[0, 2], K[1, 2]
 
         print("\nValidation:")
         print(".1f")
         print(".1f")
-        print(f"Expected principal point range: cx ~ {width//2}, cy ~ {height//2}")
+        print(f"Expected principal point range: cx ~ {width // 2}, cy ~ {height // 2}")
 
         # Check if results are reasonable
         reasonable_focal = 0.1 * max(width, height) < min(fx, fy) < 5.0 * max(width, height)
@@ -297,16 +293,13 @@ def zhang_linear_calibration(image_points_list, world_points_2d, square_size=1.0
 # ---------------------------
 def calibrate_from_chessboards(images,
                                pattern_size=(10, 6),
-                               square_size=25.0,
-                               refine_with_lm=True,
-                               include_skew=False):
+                               refine_with_lm=True):
     """
     Complete camera calibration using Zhang's linear method followed by LM refinement.
 
     Parameters:
     - images: list of grayscale images
     - pattern_size: (width, height) of chessboard internal corners
-    - square_size: physical size of chessboard squares in mm
     - refine_with_lm: whether to do nonlinear refinement
     - include_skew: whether to estimate skew parameter
 
@@ -321,7 +314,7 @@ def calibrate_from_chessboards(images,
         for x in range(pattern_w):
             world_points_2d.append([x, y])
     world_points_2d = np.array(world_points_2d, dtype=np.float64)
-    world_pts_3d = np.hstack([world_points_2d * square_size, np.zeros((len(world_points_2d), 1))])
+    world_pts_3d = np.hstack([world_points_2d, np.zeros((len(world_points_2d), 1))])
 
     # Detect corners in all images
     image_pts_list = []
@@ -346,7 +339,7 @@ def calibrate_from_chessboards(images,
     # Zhang's linear method
     print("\n=== Zhang's Linear Calibration ===")
     K_zhang, B_zhang, homographies_zhang = zhang_linear_calibration(
-        image_pts_list, world_points_2d, square_size=square_size,
+        image_pts_list, world_points_2d,
         image_size=images[0].shape[:2] if images else None
     )
     print(f"Zhang's linear method completed.")
@@ -388,8 +381,8 @@ def calibrate_from_chessboards(images,
             residuals = []
             offset = 4
             for i in range(len(image_pts_list)):
-                rvec = p[offset:offset+3]
-                tvec = p[offset+3:offset+6]
+                rvec = p[offset:offset + 3]
+                tvec = p[offset + 3:offset + 6]
                 offset += 6
                 R_i, _ = cv2.Rodrigues(rvec)
                 proj = project_points(K, R_i, tvec, world_pts_3d)
@@ -404,13 +397,13 @@ def calibrate_from_chessboards(images,
         K_refined = np.array([[fx_opt, 0, cx_opt], [0, fy_opt, cy_opt], [0, 0, 1]], dtype=np.float64)
 
         residuals = reprojection_residuals(p_opt)
-        rms_refined = np.sqrt(np.mean(residuals**2))
+        rms_refined = np.sqrt(np.mean(residuals ** 2))
 
         print(f"Refined K matrix:\n{K_refined}")
         print(f"RMS reprojection error: {rms_refined:.3f} pixels")
 
         # Compare with linear result
-        rms_initial = np.sqrt(np.mean(reprojection_residuals(params)**2))
+        rms_initial = np.sqrt(np.mean(reprojection_residuals(params) ** 2))
         improvement = rms_initial - rms_refined
         if improvement > 0.01:
             print(f"Refinement improved RMS by {improvement:.3f} pixels")
@@ -446,7 +439,6 @@ def calibrate_from_chessboards(images,
         'world_points_2d': world_points_2d,
         'world_points_3d': world_pts_3d,
         'pattern_size': pattern_size,
-        'square_size': square_size
     }
 
 
@@ -464,8 +456,7 @@ if __name__ == "__main__":
             continue
         images.append(img)
 
-    result = calibrate_from_chessboards(images, pattern_size=(10, 6), square_size=25.0,
-                                        refine_with_lm=True, include_skew=False)
+    result = calibrate_from_chessboards(images, pattern_size=(10, 6), refine_with_lm=True)
 
     # Visual check: show first image reprojection overlay
     if len(result['image_points']) > 0:
@@ -479,12 +470,12 @@ if __name__ == "__main__":
 
         reproj0 = project_points(K, R0, t0, result['world_points_3d'])
         img0 = images[0].copy()
-        plt.figure(figsize=(8,6))
+        plt.figure(figsize=(8, 6))
         plt.imshow(img0, cmap='gray')
         # plot detected points and reprojection
         det = result['image_points'][0]
-        plt.scatter(det[:,0], det[:,1], s=20, label='detected', marker='o')
-        plt.scatter(reproj0[:,0], reproj0[:,1], s=10, label='reprojected', marker='x')
+        plt.scatter(det[:, 0], det[:, 1], s=20, label='detected', marker='o')
+        plt.scatter(reproj0[:, 0], reproj0[:, 1], s=10, label='reprojected', marker='x')
         plt.legend()
         plt.title(f"First image: detected vs reprojection ({method})")
         if rms_final is not None:
