@@ -4,10 +4,11 @@
 \usepackage[T2A]{fontenc}
 \usepackage[russian]{babel}
 
+\usepackage{float}
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
 \usepackage{geometry}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \usepackage{alltt}
 
@@ -58,12 +59,21 @@ f_x & 0 & c_x \\
 \label{eq:K}
 \end{equation}
 
+
 Здесь $f_x$ и $f_y$ — фокусные расстояния в пикселях, а $(c_x, c_y)$ — координаты главной точки изображения. Параметр сдвига осей (skew) считается равным нулю.
 
 Матрица $R \in SO(3)$ и вектор $t \in \mathbb{R}^3$ описывают ориентацию и положение камеры относительно мировой системы координат. В программных библиотеках вращение часто представляется в виде вектора Родрига, однозначно соответствующего матрице $R$.
 
 \bigskip
-\textbf{Место для иллюстрации:} геометрия pinhole-модели и системы координат.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{images/Pinhole-Camera-Model.png}
+  \caption{геометрия pinhole-модели и системы координат.}
+  \label{fig:pinhole1}
+\end{figure}
+
+\bigskip
 
 \subsection*{Модель искажений}
 
@@ -94,8 +104,14 @@ y_d = y_r + p_1(r^2 + 2y^2) + 2p_2xy.
 
 Данные параметры описывают отклонения реальной оптической системы от идеальной модели и особенно заметны на периферии изображения.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{images/Distortion.png}
+  \caption{визуализация радиальной и тангенциальной дисторсии.}
+  \label{fig:distortion}
+\end{figure}
+
 \bigskip
-\textbf{Место для иллюстрации:} визуализация радиальной и тангенциальной дисторсии.
 
 \subsection*{Калибровка камеры средствами OpenCV}
 
@@ -128,6 +144,8 @@ u_i \\ v_i
 \label{eq:reprojection}
 \end{equation}
 где $(u_i, v_i)$ — наблюдаемые координаты точки на изображении, $\pi(K, R, t, X_i)$ — координаты той же точки, полученные путём проекции.
+
+
 
 
 \subsection*{Гомография и метод DLT}
@@ -253,11 +271,14 @@ V b = 0,
    путём минимизации ошибки репроекции.
 \end{quote}
 
-
-
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{images/Result.png}
+  \caption{Результат работы алгоритма выравнивания.}
+  \label{fig:result}
+\end{figure}
 
 \bigskip
-\textbf{Место для иллюстрации:} результат устранения дисторсии до и после оптимизации.
 
 \subsection*{Рекомендуемые источники}
 
@@ -270,7 +291,8 @@ V b = 0,
 \url{https://www.youtube.com/watch?v=3NcQbZu6xt8}
 \item Zhang’s Method (video)  
 \url{https://www.youtube.com/watch?v=-9He7Nu3u8s}
-\item Zhang’s Method (article)  
+\item Zhang’s Method (article)
+
 \url{https://sangillee.com/2025-07-27-calibrating-cameras-zhang-method/}
 \item Z. Zhang, “A Flexible New Technique for Camera Calibration”, 1999.
 \end{itemize}
