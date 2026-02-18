@@ -8,7 +8,7 @@
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
 \usepackage{geometry}
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
 
 \usepackage{alltt}
 
@@ -16,6 +16,15 @@
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.8em}
+
+\hypersetup{
+    pdfborderstyle={/S/U/W 1},	
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdfpagemode=FullScreen,
+    }
 
 \begin{document}
 
@@ -29,7 +38,7 @@
 
 В данной лабораторной работе рассматривается классический метод калибровки по плоскому шаблону. В основе метода лежит оценка гомографий между плоскостью шаблона и изображением, после чего внутренние параметры камеры восстанавливаются с использованием линейных ограничений, предложенных Чжаном.
 
-\subsection*{Геометрическая модель камеры}
+\subsection*{\href{https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html}{Геометрическая модель камеры}}
 
 В pinhole-модели проекция трёхмерной точки сцены на изображение описывается уравнением
 \begin{equation}
@@ -113,7 +122,7 @@ y_d = y_r + p_1(r^2 + 2y^2) + 2p_2xy.
 
 \bigskip
 
-\subsection*{Калибровка камеры средствами OpenCV}
+\subsection*{\href{https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html}{Калибровка камеры средствами OpenCV}}
 
 Алгоритмы калибровки камеры основаны на минимизации ошибки репроекции. 
 Под оператором проекции
@@ -148,7 +157,7 @@ u_i \\ v_i
 
 
 
-\subsection*{Гомография и метод DLT}
+\subsection*{\href{https://www.youtube.com/watch?v=3NcQbZu6xt8}{Гомография и метод DLT}}
 
 Если все точки шаблона лежат в плоскости $Z = 0$, проекционное уравнение~\eqref{eq:pinhole}
 упрощается и принимает вид
@@ -207,7 +216,7 @@ h_1 & h_2 & h_3 & h_4 & h_5 & h_6 & h_7 & h_8 & h_9
 
 
 
-\subsection*{Метод Чжана}
+\subsection*{\href{https://sangillee.com/2025-07-27-calibrating-cameras-zhang-method/}{Метод Чжана}}
 
 Пусть для каждого изображения плоского шаблона вычислена гомография $H_i$.
 Связь гомографии с параметрами камеры задаётся соотношением
@@ -283,18 +292,40 @@ V b = 0,
 \subsection*{Рекомендуемые источники}
 
 \begin{itemize}
-\item OpenCV Camera Calibration Documentation  
-\url{https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html}
-\item Camera Parameters (video)  
-\url{https://www.youtube.com/watch?v=uHApDqH-8UE}
-\item DLT Method (video)  
-\url{https://www.youtube.com/watch?v=3NcQbZu6xt8}
-\item Zhang’s Method (video)  
-\url{https://www.youtube.com/watch?v=-9He7Nu3u8s}
-\item Zhang’s Method (article)
+\item Camera Calibration and 3D Reconstruction 
 
+\url{https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html}
+
+
+\item OpenCV Camera Calibration Documentation  
+
+\url{https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html}
+
+
+\item Camera Parameters
+
+\url{https://www.youtube.com/watch?v=uHApDqH-8UE}
+
+
+\item DLT Method
+
+\url{https://www.ipb.uni-bonn.de/html/teaching/msr2-2020/sse2-13-DLT.pdf}
+\linebreak
+\url{https://www.youtube.com/watch?v=3NcQbZu6xt8}
+
+
+\item Zhang’s Method
+
+\url{https://www.youtube.com/watch?v=-9He7Nu3u8s}
+\linebreak
 \url{https://sangillee.com/2025-07-27-calibrating-cameras-zhang-method/}
+
+
 \item Z. Zhang, “A Flexible New Technique for Camera Calibration”, 1999.
+
+
+\item GitHub с примерами
+\url{https://github.com/57459N/ARnVRLabs}
 \end{itemize}
 
 \end{document}
