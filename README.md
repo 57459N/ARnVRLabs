@@ -1,5 +1,7 @@
 # Laboratory assignments for the course Augmented Reality Systems, RCT, BSU, Spring 2026
-##  <span style="color:red">! Code from this repository can NOT be used for submitting your task solution !</span> 
+
+> [!CAUTION]
+> Code from this repository can NOT be used for submitting your task solution
 
 ## Task 1 | Camera calibration
 ### Basic:
